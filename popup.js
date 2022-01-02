@@ -1,5 +1,11 @@
 document.addEventListener("DOMContentLoaded", initPopup, false);
 
+// init the popups
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+
+
 function myAction(input) {
   console.log("input value is : " + input.value);
   alert("The entered data is : " + input.value);

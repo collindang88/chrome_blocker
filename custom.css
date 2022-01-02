@@ -14,3 +14,7 @@ hr {
     background-color:#FFFF00;
     height: 1px;
 }
+
+.modal-header {
+    border-bottom: 0 none;
+}

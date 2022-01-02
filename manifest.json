@@ -22,6 +22,5 @@
         "default_icon": "/images/stop_symbol.png",
         "default_popup": "popup.html",
         "default_title": "a mysterious popup"
-    },
-    "content_security_policy": "script-src 'self' https://ajax.googleapis.com https://stackpath.bootstrapcdn.com https://code.jquery.com https://cdn.jsdelivr.net; object-src 'self';"
+    }
 }
