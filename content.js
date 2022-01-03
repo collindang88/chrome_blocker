@@ -1,41 +1,66 @@
 // html for the emoji
 function generateHTML() {
-  let strings = [
-    `<h1 class="big-middle"> ¯\\_(ツ)_/¯ </h1>`,
-    `<h1 class="big-middle"> (ㆆ _ ㆆ) </h1>`,
-    `<h1 class="big-middle"> /|\\ ^._.^ /|\\ </h1>`,
-    `<h1 class="big-middle"> ʕっ•ᴥ•ʔっ </h1>`,
-    `<h1 class="big-middle"> 	(˵ ͡° ͜ʖ ͡°˵) </h1>`,
-    `<h1 class="big-middle"> (= ФェФ=) </h1>`,
-    `<h1 class="big-middle"> 	( ͡° ᴥ ͡°) </h1>`,
-    `<h1 class="big-middle"> (｡◕‿‿◕｡) </h1>`,
-    `<h1 class="big-middle"> 	d[-_-]b </h1>`,
-    `<h1 class="big-middle"> 	<(^_^)> </h1>`,
-    `<h1 class="big-middle"> (̿▀̿ ̿Ĺ̯̿̿▀̿ ̿)̄ </h1>`,
-    `<h1 class="big-middle"> 	(҂◡_◡) ᕤ </h1>`,
-    `<h1 class="big-middle"> 	| (• ◡•)| </h1>`,
+  let emojis = [
+    `¯\\_(ツ)_/¯`,
+    `(ㆆ _ ㆆ)`,
+    `/|\\ ^._.^ /|\\`,
+    `ʕっ•ᴥ•ʔっ`,
+    `(˵ ͡° ͜ʖ ͡°˵)`,
+    `(= ФェФ=)`,
+    `	( ͡° ᴥ ͡°)`,
+    `(｡◕‿‿◕｡)`,
+    `	d[-_-]b`,
+    `	<(^_^)>`,
+    `(̿▀̿ ̿Ĺ̯̿̿▀̿ ̿)̄ `,
+    `	(҂◡_◡) ᕤ `,
+    `	| (• ◡•)|`,
   ];
-  let string = strings[Math.floor(Math.random() * strings.length)];
-  return string;
+  let selectedEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+  return `<h1 class="big-middle"> ${selectedEmoji} </h1>`;
+}
+
+function normalize(url) {
+  // take out https://
+  if (url.indexOf("https://") == 0) {
+    url = url.substring(8);
+  }
+  // take out www.
+  if (url.indexOf("www.") == 0) {
+    url = url.substring(4);
+  }
+  // take out slash at end
+  if (url.charAt(url.length - 1) === '/') {
+    url = url.substring(0, url.length - 1);
+  }
+
+  return url;
 }
 
 function blockHostname() {
-  let hostname = window.location.hostname;
-  if (hostname.indexOf("www.") == 0) {
-    hostname = hostname.substring(4);
+  for (let i = 0; i < blackList.length; i++) {
+    if (normalize(blackList[i]) === normalize(window.location.hostname)) {
+      document.head.innerHTML = generateStyling();
+      document.body.innerHTML = generateHTML();
+    }
   }
-
-  if (blackList.includes(hostname)) {
-    document.head.innerHTML = generateStyling();
-    document.body.innerHTML = generateHTML();
-  }
+  // if (blackList.includes(hostname)) {
+  //   document.head.innerHTML = generateStyling();
+  //   document.body.innerHTML = generateHTML();
+  // }
 }
 
 function blockHref() {
-  if (targetedBlackList.includes(window.location.href)) {
-    document.head.innerHTML = generateStyling();
-    document.body.innerHTML = generateHTML();
+  for (let i = 0; i < targetedBlackList.length; i++) {
+    if (normalize(targetedBlackList[i]) === normalize(window.location.href)) {
+      document.head.innerHTML = generateStyling();
+      document.body.innerHTML = generateHTML();
+    }
   }
+
+  // if (targetedBlackList.includes(window.location.href)) {
+  //   document.head.innerHTML = generateStyling();
+  //   document.body.innerHTML = generateHTML();
+  // }
 }
 
 // html for the styling
@@ -67,7 +92,7 @@ chrome.storage.sync.get("targetedBlockedList", function (result) {
 });
 
 // block sites every 500 milliseconds
-var intervalId = window.setInterval(function () {
+let intervalId = window.setInterval(function () {
   blockHostname();
   blockHref();
 }, 500);

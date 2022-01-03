@@ -1,10 +1,9 @@
 document.addEventListener("DOMContentLoaded", initPopup, false);
 
-// init the popups
+// init the tooltips (when hovering over the add buttons)
 $(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-})
-
+  $('[data-toggle="tooltip"]').tooltip();
+});
 
 function myAction(input) {
   console.log("input value is : " + input.value);
@@ -94,7 +93,7 @@ function addInput(type) {
   // Execute a function when the user releases a key on the keyboard
   newChild.addEventListener("keyup", function (event) {
     // Number 13 is the "Enter" key on the keyboard
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       // Cancel the default action, if needed
       event.preventDefault();
       // Trigger the button element with a click
@@ -109,9 +108,16 @@ function addInput(type) {
 
 // the "Confirm" button
 function confirmURL(inputNode, type) {
-  // alert("confirm");
   let inputBox = inputNode.firstChild;
   let inputList = inputNode.parentNode;
+
+  // make sure the inputBox actually contains some characters; else return
+  if (inputBox.value.trim().length == 0) {
+    return;
+  }
+
+  // alert("confirm");
+  
   inputList.removeChild(inputNode);
 
   addStaticElement(inputBox.value, type);
@@ -143,13 +149,6 @@ function confirmURL(inputNode, type) {
       chrome.storage.sync.set({ targetedBlockedList: masterList2 });
     });
   }
-
-  // chrome.storage.sync.set({name: "collin"}, function() {
-  //     console.log("value is set");
-  //     chrome.storage.sync.get(['name'], function(result) {
-  //         console.log("your name is: " + result.name);
-  //     })
-  // })
 }
 
 function addStaticElement(text, type) {
