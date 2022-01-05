@@ -9,7 +9,6 @@
     },
     "description": "Allows user to block certain websites.",
     "permissions": [
-        "activeTab",
         "storage"
     ],
     "content_scripts": [

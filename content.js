@@ -43,10 +43,6 @@ function blockHostname() {
       document.body.innerHTML = generateHTML();
     }
   }
-  // if (blackList.includes(hostname)) {
-  //   document.head.innerHTML = generateStyling();
-  //   document.body.innerHTML = generateHTML();
-  // }
 }
 
 function blockHref() {
@@ -56,11 +52,6 @@ function blockHref() {
       document.body.innerHTML = generateHTML();
     }
   }
-
-  // if (targetedBlackList.includes(window.location.href)) {
-  //   document.head.innerHTML = generateStyling();
-  //   document.body.innerHTML = generateHTML();
-  // }
 }
 
 // html for the styling
