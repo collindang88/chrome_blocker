@@ -5,6 +5,20 @@ $(function () {
   $('[data-toggle="tooltip"]').tooltip();
 });
 
+// add empty lists to chrome storage sync if variables don't exist yet
+chrome.storage.sync.get("blockedList", function (result) {
+  if (result.blockedList === undefined) {
+    chrome.storage.sync.set({ blockedList: [] });
+  }
+});
+
+chrome.storage.sync.get("targetedBlockedList", function (result) {
+  if (result.targetedBlockedList === undefined) {
+    chrome.storage.sync.set({ targetedBlockedList: [] });
+  }
+});
+
+
 function initPopup() {
   document
     .getElementById("plus_button_blacklist")
@@ -66,6 +80,7 @@ function addInput(type) {
   newButton.innerHTML = "Confirm";
   newButton.style.marginLeft = "10px";
   newButton.classList.add("btn", "btn-primary");
+  
   if (type === "normal") {
     newButton.onclick = function () {
       confirmURL(inputNode, "normal");
@@ -75,6 +90,8 @@ function addInput(type) {
       confirmURL(inputNode, "targeted");
     };
   }
+
+  
 
   // Execute a function when the user releases a key on the keyboard
   newChild.addEventListener("keyup", function (event) {
@@ -90,6 +107,9 @@ function addInput(type) {
   inputNode.appendChild(newButton);
 
   inputList.appendChild(inputNode);
+
+  // make cursor go to now input box
+  newChild.focus();
 }
 
 // the "Confirm" button

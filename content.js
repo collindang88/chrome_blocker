@@ -84,6 +84,6 @@ chrome.storage.sync.get("targetedBlockedList", function (result) {
 
 // block sites every 500 milliseconds
 let intervalId = window.setInterval(function () {
-  blockHostname();
-  blockHref();
+  blockHostname(blackList);
+  blockHref(targetedBlackList);
 }, 500);
