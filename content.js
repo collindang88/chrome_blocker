@@ -19,6 +19,7 @@ function generateHTML() {
   return `<h1 class="big-middle"> ${selectedEmoji} </h1>`;
 }
 
+// same as the one in popup.js...I couldn't figure out how to import the method
 function normalize(url) {
   // take out https://
   if (url.indexOf("https://") == 0) {

@@ -1,9 +1,29 @@
 document.addEventListener("DOMContentLoaded", initPopup, false);
+let normalBox = null;
+let targetedBox = null;
 
 // init the tooltips (when hovering over the add buttons)
 $(function () {
   $('[data-toggle="tooltip"]').tooltip();
 });
+
+// same as the one in content.js...I couldn't figure out how to import the method
+function normalize(url) {
+  // take out https://
+  if (url.indexOf("https://") == 0) {
+    url = url.substring(8);
+  }
+  // take out www.
+  if (url.indexOf("www.") == 0) {
+    url = url.substring(4);
+  }
+  // take out slash at end
+  if (url.charAt(url.length - 1) === '/') {
+    url = url.substring(0, url.length - 1);
+  }
+
+  return url;
+}
 
 // add empty lists to chrome storage sync if variables don't exist yet
 chrome.storage.sync.get("blockedList", function (result) {
@@ -63,8 +83,16 @@ function addInput(type) {
   let inputList = "default";
   if (type === "normal") {
     inputList = document.getElementById("input_list");
+    if (normalBox) {
+      normalBox.focus();
+      return;
+    }
   } else if (type === "targeted") {
     inputList = document.getElementById("input_list_targeted");
+    if (targetedBox) {
+      targetedBox.focus();
+      return;
+    }
   }
 
   let inputNode = document.createElement("div");
@@ -74,6 +102,11 @@ function addInput(type) {
   newChild.style.marginTop = "5px";
   newChild.style.marginBottom = "5px";
   inputNode.appendChild(newChild);
+  if (type === "normal") {
+    normalBox = newChild;
+  } else {
+    targetedBox = newChild;
+  }
 
   let newButton = document.createElement("button");
   newButton.type = "button";
@@ -112,23 +145,41 @@ function addInput(type) {
   newChild.focus();
 }
 
+// returns true if the text matches anything in the inputList, false otherwise
+function checkMatches(text, inputList) {
+  for (const elt of inputList.childNodes) {
+    if (elt.nodeName === "DIV" && normalize(elt.firstChild.innerHTML) === normalize(text)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // the "Confirm" button
 function confirmURL(inputNode, type) {
   let inputBox = inputNode.firstChild;
   let inputList = inputNode.parentNode;
 
-  // make sure the inputBox actually contains some characters; else return
-  if (inputBox.value.trim().length == 0) {
+  // get text of input box (but remove whitespace with regex)
+  let text = inputBox.value.replace(/\s+/g, '')
+
+  // make sure we don't match anything already in our inputList
+  if (checkMatches(text, inputList)) {
+    inputBox.focus();
     return;
   }
 
-  // alert("confirm");
+  // make sure the inputBox actually contains some characters; else return
+  if (text.length == 0) {
+    return;
+  }
   
   inputList.removeChild(inputNode);
 
-  addStaticElement(inputBox.value, type);
+  addStaticElement(text, type);
 
   if (type === "normal") {
+    normalBox = null;
     chrome.storage.sync.get("blockedList", function (result) {
       let masterList = [];
       if (typeof result.blockedList !== "undefined") {
@@ -136,12 +187,13 @@ function confirmURL(inputNode, type) {
       }
 
       // add our new value to masterList
-      masterList.push(inputBox.value);
+      masterList.push(text);
 
       // replace the old key with our new key
       chrome.storage.sync.set({ blockedList: masterList });
     });
   } else if (type === "targeted") {
+    targetedBox = null;
     chrome.storage.sync.get("targetedBlockedList", function (result) {
       let masterList2 = [];
       if (typeof result.targetedBlockedList !== "undefined") {
@@ -149,7 +201,7 @@ function confirmURL(inputNode, type) {
       }
 
       // add our new value to masterList
-      masterList2.push(inputBox.value);
+      masterList2.push(text);
 
       // replace the old key with our new key
       chrome.storage.sync.set({ targetedBlockedList: masterList2 });
